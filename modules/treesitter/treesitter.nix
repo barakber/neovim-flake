@@ -26,10 +26,7 @@ in
 
   config = mkIf cfg.enable (
     let
-      disabledLanguages =
-        if (config.vim.scala.highlightMode == "regex")
-        then ''{ "scala" }''
-        else "{}";
+      disabledLanguages = "{}";
     in
     {
       vim.startPlugins = with pkgs.neovimPlugins; (

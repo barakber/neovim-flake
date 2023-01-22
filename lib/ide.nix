@@ -23,10 +23,6 @@ let
         nvimCodeActionMenu.enable = true;
         trouble.enable = true;
         lspSignature.enable = true;
-        scala = {
-          enable = true;
-          metals = pkgs.metals;
-        };
         nix = {
           enable = true;
           type = "nil";
@@ -84,13 +80,6 @@ let
         enable = true;
         autotagHtml = true;
         context.enable = true;
-      };
-      scala = {
-        highlightMode = "treesitter";
-      };
-      keys = {
-        enable = true;
-        whichKey.enable = true;
       };
       comments = {
         enable = true;
@@ -174,15 +163,5 @@ in
 
   haskell = neovimBuilder {
     config = deepMerge cfg haskell-lsp;
-  };
-
-  scala = neovimBuilder { config = cfg; };
-
-  scala-rose-pine = neovimBuilder {
-    config = deepMerge cfg rose-pine;
-  };
-
-  scala-tokyo-night = neovimBuilder {
-    config = deepMerge cfg tokyo-night;
   };
 }

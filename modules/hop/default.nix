@@ -17,7 +17,7 @@ in
     vim.startPlugins = [ pkgs.neovimPlugins.hop ];
 
     vim.nnoremap = {
-      "<leader>h" = "<cmd> HopPattern<CR>";
+      ";" = "<cmd> HopWord<CR>";
     };
 
     vim.luaConfigRC = ''

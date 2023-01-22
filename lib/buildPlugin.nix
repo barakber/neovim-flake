@@ -9,12 +9,12 @@ let
   inherit (prev.vimUtils) buildVimPluginFrom2Nix;
 
   ts = prev.tree-sitter.override {
-    extraGrammars = { tree-sitter-scala = final.tree-sitter-scala-master; };
   };
 
   treesitterGrammars = ts.withPlugins (p: [
-    p.tree-sitter-scala
     p.tree-sitter-c
+    p.tree-sitter-go
+    p.tree-sitter-javascript
     p.tree-sitter-nix
     p.tree-sitter-elm
     p.tree-sitter-haskell
@@ -31,6 +31,7 @@ let
     p.tree-sitter-graphql
     p.tree-sitter-json
     p.tree-sitter-smithy
+    p.tree-sitter-turtle
   ]);
 
   smithy-lsp = pkgs.callPackage ./smithy-lspconfig.nix { };
@@ -60,14 +61,7 @@ let
       '
   '';
 
-  # sync queries of tree-sitter-scala and nvim-treesitter
-  scalaQueriesHook = ''
-    cp ${inputs.tree-sitter-scala}/queries/* $out/queries/scala/
-  '';
-
   tsPreFixupHook = ''
-    ${scalaQueriesHook}
-
     ${smithyParserHook}
   '';
 
@@ -92,14 +86,8 @@ let
       '';
     };
 
-  vim-scala3 = prev.vimUtils.buildVimPlugin {
-    name = "vim-scala3";
-    src = inputs.vim-scala;
-  };
-
   vimPlugins = {
     inherit (pkgs.vimPlugins) nerdcommenter;
-    inherit vim-scala3;
   };
 in
 {

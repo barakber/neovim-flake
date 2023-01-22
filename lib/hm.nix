@@ -31,7 +31,6 @@ with lib; {
             dhall = true;
             elm = true;
             haskell = true;
-            scala = true;
             sql = true;
             python = false;
             clang = false;

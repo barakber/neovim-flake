@@ -1,5 +1,5 @@
 {
-  description = "Neovim Flake by Gabriel Volpe";
+  description = "Neovim Flake by Berko";
 
   inputs = {
     nixpkgs.url = github:nixos/nixpkgs/nixpkgs-unstable;
@@ -62,10 +62,6 @@
     };
     rust-tools = {
       url = github:simrat39/rust-tools.nvim;
-      flake = false;
-    };
-    nvim-metals = {
-      url = github:scalameta/nvim-metals;
       flake = false;
     };
 
@@ -131,10 +127,6 @@
       url = github:hrsh7th/cmp-nvim-lsp;
       flake = false;
     };
-    cmp-vsnip = {
-      url = github:hrsh7th/cmp-vsnip;
-      flake = false;
-    };
     cmp-path = {
       url = github:hrsh7th/cmp-path;
       flake = false;
@@ -145,10 +137,6 @@
     };
 
     # Snippets
-    vim-vsnip = {
-      url = github:hrsh7th/vim-vsnip;
-      flake = false;
-    };
 
     # Autopairs
     nvim-autopairs = {
@@ -230,6 +218,18 @@
       url = github:lewis6991/gitsigns.nvim;
       flake = false;
     };
+    vimagit = {
+      url = github:jreybert/vimagit;
+      flake = false;
+    };
+    fugitive = {
+      url = github:tpope/vim-fugitive;
+      flake = false;
+    };
+    nvim-blame-line = {
+      url = github:tveskag/nvim-blame-line;
+      flake = false;
+    };
 
     # Fx
     cellular-automaton = {
@@ -238,10 +238,6 @@
     };
 
     # Key binding help
-    which-key = {
-      url = github:folke/which-key.nvim;
-      flake = false;
-    };
 
     # Markdown
     glow-nvim = {
@@ -262,25 +258,20 @@
       flake = false;
     };
 
-    # Scala 3 highlights (treesitter doesn't yet support it)
-    vim-scala = {
-      url = github:gvolpe/vim-scala;
-      flake = false;
-    };
-
     # Plant UML syntax highlights
     vim-plantuml = {
       url = github:aklt/plantuml-syntax;
       flake = false;
     };
 
+    vim-alloy = {
+      url = github:lorin/vim-alloy;
+      flake = false;
+    };
+
     # custom tree-sitter grammar
     ts-build.url = github:pta2002/build-ts-grammar.nix;
 
-    tree-sitter-scala = {
-      url = github:tree-sitter/tree-sitter-scala;
-      flake = false;
-    };
   };
 
   outputs = inputs @ { self, nixpkgs, flake-utils, ... }:
@@ -311,15 +302,12 @@
           "nvim-cmp"
           "cmp-nvim-lsp"
           "cmp-buffer"
-          "cmp-vsnip"
           "cmp-path"
           "cmp-treesitter"
           "crates-nvim"
-          "vim-vsnip"
           "nvim-code-action-menu"
           "trouble"
           "null-ls"
-          "which-key"
           "indent-blankline"
           "nvim-cursorline"
           "sqls-nvim"
@@ -329,7 +317,6 @@
           "onedark"
           "kommentary"
           "hop"
-          "nvim-metals"
           "todo-comments"
           "nvim-ufo"
           "promise-async"
@@ -337,12 +324,15 @@
           "vim-plantuml"
           "rosepine"
           "cellular-automaton"
+          "vimagit"
+          "fugitive"
+          "nvim-blame-line"
+          "vim-alloy"
         ];
 
         lib = import ./lib { inherit pkgs inputs plugins; };
 
         pluginOverlay = lib.buildPluginOverlay;
-        metalsOverlay = lib.metalsOverlay;
         nmdOverlay = inputs.nmd.overlays.default;
 
         libOverlay = f: p: {
@@ -352,11 +342,6 @@
         };
 
         tsOverlay = f: p: {
-          tree-sitter-scala-master = inputs.ts-build.lib.buildGrammar p {
-            language = "scala";
-            version = "${inputs.tree-sitter-scala.version}-${inputs.tree-sitter-scala.rev}";
-            source = inputs.tree-sitter-scala;
-          };
         };
 
         neovimOverlay = f: p: {
@@ -366,10 +351,9 @@
         pkgs = import nixpkgs {
           inherit system;
           config = { allowUnfree = true; };
-          overlays = [ libOverlay pluginOverlay metalsOverlay neovimOverlay nmdOverlay tsOverlay ];
+          overlays = [ libOverlay pluginOverlay neovimOverlay nmdOverlay tsOverlay ];
         };
 
-        metalsBuilder = lib.metalsBuilder;
         neovimBuilder = lib.neovimBuilder;
 
         default-ide = pkgs.callPackage ./lib/ide.nix {
@@ -400,7 +384,7 @@
         };
 
         overlays.default = f: p: {
-          inherit metalsBuilder neovimBuilder;
+          inherit neovimBuilder;
           inherit (pkgs) neovim-nightly neovimPlugins;
         };
 
@@ -420,9 +404,6 @@
           docs-search = searchdocs.html;
 
           # CI package
-          metals = pkgs.metals;
-          ts-scala = pkgs.tree-sitter-scala-master;
-          nvim-treesitter = pkgs.neovimPlugins.nvim-treesitter;
 
           # Main languages enabled
           ide = default-ide.full.neovim;
@@ -431,19 +412,14 @@
           haskell = default-ide.haskell.neovim;
 
           # Only Scala with different themes
-          scala = default-ide.scala.neovim;
-          scala-rose-pine = default-ide.scala-rose-pine.neovim;
-          scala-tokyo-night = default-ide.scala-tokyo-night.neovim;
 
           # Neovim configuration files
           ide-neovim-rc = default-ide.full.neovimRC;
           haskell-neovim-rc = default-ide.haskell.neovimRC;
-          scala-neovim-rc = default-ide.scala.neovimRC;
 
           # Lua configuration files
           ide-lua-rc = default-ide.full.luaRC;
           haskell-lua-rc = default-ide.haskell.luaRC;
-          scala-lua-rc = default-ide.scala.luaRC;
         };
       }
     );

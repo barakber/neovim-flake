@@ -32,7 +32,6 @@ in
           withPlugins (cfg.type == "nvim-cmp") [
             nvim-cmp
             cmp-buffer
-            cmp-vsnip
             cmp-path
             cmp-treesitter
           ]
@@ -79,7 +78,6 @@ in
                calc = true;
                nvim_lsp = true;
                nvim_lua = true;
-               vsnip = true;
                ultisnips = true;
             };
           }
@@ -100,12 +98,6 @@ in
           _G.tab_complete = function()
             if vim.fn.pumvisible() == 1 then
               return t "<C-n>"
-            ${
-            writeIf config.vim.snippets.vsnip.enable ''
-              elseif vim.fn['vsnip#available'](1) == 1 then
-                return t "<Plug>(vsnip-expand-or-jump)
-            ''
-          }
             elseif check_back_space() then
               return t "<Tab>"
             else
@@ -115,12 +107,6 @@ in
           _G.s_tab_complete = function()
             if vim.fn.pumvisible() == 1 then
               return t "<C-p>"
-            ${
-            writeIf config.vim.snippets.vsnip.enable ''
-              elseif vim.fn['vsnip#jumpable'](-1) == 1 then
-                return t "<Plug>(vsnip-jump-prev)
-            ''
-          }
             else
               -- If <S-Tab> is not working in your terminal, change it to <C-h>
               return t "<S-Tab>"
@@ -147,13 +133,11 @@ in
           cmp.setup({
             snippet = {
               expand = function(args)
-                vim.fn["vsnip#anonymous"](args.body)
               end,
             },
             sources = {
               ${writeIf (config.vim.lsp.enable) "{ name = 'nvim_lsp' },"}
               ${writeIf (config.vim.lsp.rust.enable) "{ name = 'crates' },"}
-              { name = 'vsnip' },
               { name = 'treesitter' },
               { name = 'path' },
               { name = 'buffer' },
@@ -173,8 +157,6 @@ in
               ['<Tab>'] = cmp.mapping(function (fallback)
                 if cmp.visible() then
                   cmp.select_next_item()
-                elseif vim.fn['vsnip#available'](1) == 1 then
-                  feedkey("<Plug>(vsnip-expand-or-jump)", "")
                 elseif has_words_before() then
                   cmp.complete()
                 else
@@ -185,8 +167,6 @@ in
               ['<S-Tab>'] = cmp.mapping(function (fallback)
                 if cmp.visible() then
                   cmp.select_prev_item()
-                elseif vim.fn['vsnip#available'](-1) == 1 then
-                  feedkeys("<Plug>(vsnip-jump-prev)", "")
                 end
               end, { 'i', 's' })
             },
@@ -205,7 +185,6 @@ in
                 vim_item.menu = ({
                   buffer = "[Buffer]",
                   nvim_lsp = "[LSP]",
-                  vsnip = "[VSnip]",
                   crates = "[Crates]",
                   path = "[Path]",
                 })[entry.source.name]
@@ -220,10 +199,6 @@ in
         ''}
       '';
 
-      vim.snippets.vsnip.enable =
-        if (cfg.type == "nvim-cmp")
-        then true
-        else config.vim.snippets.vsnip.enable;
     }
   );
 }

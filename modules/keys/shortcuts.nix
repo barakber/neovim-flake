@@ -21,10 +21,10 @@ in
 
         ### Handle window actions with Meta instead of <C-w>
         # Switching
-        "<M-h>" = "<C-w>h";
-        "<M-j>" = "<C-w>j";
-        "<M-k>" = "<C-w>k";
-        "<M-l>" = "<C-w>l";
+        "<C-h>" = "<C-w>h";
+        "<C-j>" = "<C-w>j";
+        "<C-k>" = "<C-w>k";
+        "<C-l>" = "<C-w>l";
 
         # Moving
         "<M-H>" = "<C-w>H";

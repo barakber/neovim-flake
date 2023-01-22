@@ -17,13 +17,25 @@ in
       type = types.bool;
       description = "Enable git options";
     };
+
+    blameLine = mkOption {
+      default = true;
+      description = "Prints blame info of who edited the line you are on.";
+      type = types.bool;
+    };
   };
 
   config =
     mkIf cfg.enable (
       {
         vim.startPlugins =
-          withPlugins cfg.gitsigns.enable [ pkgs.neovimPlugins.gitsigns-nvim ];
+          withPlugins cfg.gitsigns.enable [
+            pkgs.neovimPlugins.gitsigns-nvim
+            pkgs.neovimPlugins.fugitive
+            pkgs.neovimPlugins.vimagit
+            pkgs.neovimPlugins.nvim-blame-line
+
+          ];
 
         vim.luaConfigRC = mkIf (cfg.gitsigns.enable) ''
           -- GitSigns setup
@@ -55,6 +67,12 @@ in
             },
           }
         '';
+
+        vim.configRC = ''
+          ${if cfg.blameLine then ''
+            autocmd BufEnter * EnableBlameLine
+          '' else ""}
+    '';
       }
     );
 }

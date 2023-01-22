@@ -17,8 +17,6 @@
     ./mind
     ./neovim
     ./plantuml
-    ./scala
-    ./snippets
     ./statusline
     ./tabline
     ./telescope

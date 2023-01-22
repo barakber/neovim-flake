@@ -32,15 +32,6 @@ in
     elm = mkEnableOption "Elm LSP";
     haskell = mkEnableOption "Haskell LSP (hls)";
 
-    scala = {
-      enable = mkEnableOption "Scala LSP (Metals)";
-      metals = mkOption {
-        type = types.package;
-        default = pkgs.metals;
-        description = "The Metals package to use. Default pkgs.metals.";
-      };
-    };
-
     smithy = mkEnableOption "Smithy Language LSP";
     sql = mkEnableOption "SQL Language LSP";
     ts = mkEnableOption "TS language LSP";
@@ -70,14 +61,8 @@ in
         [ nvim-lspconfig null-ls ] ++
         (withPlugins (config.vim.autocomplete.enable && (config.vim.autocomplete.type == "nvim-cmp")) [ cmp-nvim-lsp ]) ++
         (withPlugins cfg.sql [ sqls-nvim ]) ++
-        (withPlugins cfg.scala.enable [ nvim-metals ]) ++
         (withPlugins cfg.folds [ promise-async nvim-ufo ]) ++
         (withPlugins cfg.rust.enable [ crates-nvim rust-tools ]);
-
-      vim.nnoremap = withAttrSet cfg.scala.enable {
-        "<silent> <leader>ws" = "<cmd>lua require'metals'.worksheet_hover()<CR>";
-        "<silent> <leader>a" = "<cmd>lua require'metals'.open_all_diagnostics()<CR>";
-      };
 
       vim.configRC = ''
         ${writeIf cfg.rust.enable ''
@@ -425,38 +410,6 @@ in
             cmd = { "${pkgs.haskell-language-server}/bin/haskell-language-server-wrapper", "--lsp" };
             root_dir = lspconfig.util.root_pattern("hie.yaml", "stack.yaml", ".cabal", "cabal.project", "package.yaml");
           }
-        ''}
-
-        ${writeIf cfg.scala.enable ''
-          -- Scala nvim-metals config
-          metals_config = require('metals').bare_config()
-          metals_config.capabilities = capabilities
-          metals_config.on_attach = default_on_attach
-
-          metals_config.settings = {
-             metalsBinaryPath = "${cfg.scala.metals}/bin/metals",
-             showImplicitArguments = true,
-             excludedPackages = {
-               "akka.actor.typed.javadsl",
-               "com.github.swagger.akka.javadsl"
-             }
-          }
-
-          metals_config.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-            vim.lsp.diagnostic.on_publish_diagnostics, {
-              virtual_text = {
-                prefix = '',
-              }
-            }
-          )
-
-          -- without doing this, autocommands that deal with filetypes prohibit messages from being shown
-          vim.opt_global.shortmess:remove("F")
-
-          vim.cmd([[augroup lsp]])
-          vim.cmd([[autocmd!]])
-          vim.cmd([[autocmd FileType java,scala,sbt lua require('metals').initialize_or_attach(metals_config)]])
-          vim.cmd([[augroup end]])
         ''}
 
         ${writeIf cfg.nix.enable

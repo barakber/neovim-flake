@@ -139,7 +139,7 @@ in
       vim.mapLeaderSpace = mkDefault true;
       vim.useSystemClipboard = mkDefault true;
       vim.mouseSupport = mkDefault "v";
-      vim.lineNumberMode = mkDefault "relNumber";
+      vim.lineNumberMode = mkDefault "number";
       vim.preventJunkFiles = mkDefault false;
       vim.tabWidth = mkDefault 2;
       vim.autoIndent = mkDefault true;
@@ -235,8 +235,8 @@ in
           set clipboard+=unnamedplus
         ''}
         ${writeIf cfg.mapLeaderSpace ''
-          let mapleader=" "
-          let maplocalleader=" "
+          let mapleader=","
+          let maplocalleader=","
         ''}
         ${writeIf cfg.syntaxHighlighting ''
           syntax on
