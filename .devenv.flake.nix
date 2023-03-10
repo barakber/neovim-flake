@@ -25,15 +25,15 @@
           name = builtins.head paths;
           input = inputs.${name} or (throw "Unknown input ${name}");
           subpath = "/${lib.concatStringsSep "/" (builtins.tail paths)}";
-          devenvpath = "${input}/" + subpath + "/devenv.nix";
-          in if (!devenv.inputs.${name}.flake or true) && builtins.pathExists devenvpath
+          devenvpath = "${input}" + subpath + "/devenv.nix";
+          in if builtins.pathExists devenvpath
              then devenvpath
              else throw (devenvpath + " file does not exist for input ${name}.");
       project = pkgs.lib.evalModules {
         specialArgs = inputs // { inherit inputs pkgs; };
         modules = [
           (inputs.devenv.modules + /top-level.nix)
-          { devenv.cliVersion = "0.5"; }
+          { devenv.cliVersion = "0.5.1"; }
         ] ++ (map toModule (devenv.imports or [])) ++ [
           ./devenv.nix
           (devenv.devenv or {})

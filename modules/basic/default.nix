@@ -177,9 +177,9 @@ in
       vim.nnoremap =
         let
           mls = if (cfg.mapLeaderSpace) then { "<space>" = "<nop>"; } else { };
-          mch = if (cfg.mapClearHighlight) then { "<C-z>" = ":nohlsearch<CR>"; } else { };
+          #mch = if (cfg.mapClearHighlight) then { "<C-z>" = ":nohlsearch<CR>"; } else { };
         in
-        mls // mch;
+        mls; # // mch;
 
       vim.startConfigRC = ''
         " Settings that are set for everything
